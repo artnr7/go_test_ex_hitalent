@@ -6,10 +6,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type ChatStorage interface {
-	CreateChat(chat *models.Chat) error
-}
-
 type chatStorage struct {
 	db *gorm.DB
 }
@@ -33,7 +29,7 @@ func (s *chatStorage) GetChatWithMessages(
 	var chat models.Chat
 
 	err := s.db.Preload("Messages", func(db *gorm.DB) *gorm.DB {
-		return db.Order("created_at").Limit(int(limit))
+		return db.Order("created_at desc").Limit(int(limit))
 	}).First(&chat, chatID).Error
 
 	return &chat, err
