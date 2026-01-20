@@ -1,7 +1,9 @@
+// Package storage implements GORM PostgreSQL database processing
 package storage
 
 import (
 	"chat-api/internal/models"
+	"errors"
 
 	"gorm.io/gorm"
 )
@@ -21,18 +23,23 @@ func (s *chatStorage) CreateChat(chat *models.Chat) error {
 func (s *chatStorage) GetChatWithMessages(
 	chatID uint,
 	limit uint,
-) (*models.Chat, error) {
+) (*models.ChatWithMessages, error) {
 	if limit > 100 {
 		limit = 100
 	}
 
-	var chat models.Chat
+	var chatWMessages models.ChatWithMessages
+	err := s.db.Where("id = ", chatID).First(&chatWMessages.Chat).Error
+	if err != nil {
+		return &models.ChatWithMessages{}, err
+	}
 
-	err := s.db.Preload("Messages", func(db *gorm.DB) *gorm.DB {
-		return db.Order("created_at desc").Limit(int(limit))
-	}).First(&chat, chatID).Error
+	err = s.db.Where("chatID = ?", chatWMessages.Chat.ID).
+		Order("created_at DESC").
+		Find(&chatWMessages.Messages).
+		Error
 
-	return &chat, err
+	return &chatWMessages, err
 }
 
 func (s *chatStorage) SendMessage(chatID uint, message *models.Message) error {
@@ -41,5 +48,15 @@ func (s *chatStorage) SendMessage(chatID uint, message *models.Message) error {
 }
 
 func (s *chatStorage) DeleteChat(chatID uint) error {
-	return s.db.Where("id = ?", chatID).Delete(&models.Chat{}).Error
+	res := s.db.Where("id = ?", chatID).Delete(&models.Chat{})
+
+	if res.Error != nil {
+		return res.Error
+	}
+
+	if res.RowsAffected <= 0 {
+		return errors.New("chat not found")
+	}
+
+	return nil
 }

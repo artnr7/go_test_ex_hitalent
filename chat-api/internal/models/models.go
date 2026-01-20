@@ -15,3 +15,8 @@ type Message struct {
 	Text      string `gorm:"size:5000;not null"`
 	CreatedAt time.Time
 }
+
+type ChatWithMessages struct {
+	Chat     Chat
+	Messages []Message
+}

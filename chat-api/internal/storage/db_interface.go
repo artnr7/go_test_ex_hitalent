@@ -6,7 +6,10 @@ import (
 
 type ChatStorage interface {
 	CreateChat(chat *models.Chat) error
-	GetChatWithMessages(chatID uint, limit uint) error
-	SendMessages(chatID uint, message *models.Message) error
+	GetChatWithMessages(
+		chatID uint,
+		limit uint,
+	) (*models.ChatWithMessages, error)
+	SendMessage(chatID uint, message *models.Message) error
 	DeleteChat(chatID uint) error
 }
