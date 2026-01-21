@@ -17,6 +17,6 @@ type Message struct {
 }
 
 type ChatWithMessages struct {
-	Chat     Chat
-	Messages []Message
+	Chat     Chat      `gorm:"embedded;embeddedPrefix:chat_"`
+	Messages []Message `gorm:"embedded;embeddedPrefix:message_"`
 }

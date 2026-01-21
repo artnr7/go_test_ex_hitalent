@@ -70,7 +70,7 @@ func (h *ChatHandler) CreateChat(w http.ResponseWriter, r *http.Request) {
 
 func chatIDParse(w http.ResponseWriter, r *http.Request, chatID *int) error {
 	var err error
-	*chatID, err = strconv.Atoi(r.PathValue("chatID"))
+	*chatID, err = strconv.Atoi(r.PathValue("id"))
 	if err != nil || *chatID < 0 {
 		http.Error(w, "Invalid chat ID", http.StatusBadRequest)
 		return errors.New("bad parse")

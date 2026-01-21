@@ -29,12 +29,12 @@ func (s *chatStorage) GetChatWithMessages(
 	}
 
 	var chatWMessages models.ChatWithMessages
-	err := s.db.Where("id = ", chatID).First(&chatWMessages.Chat).Error
+	err := s.db.Where("id = ?", chatID).First(&chatWMessages.Chat).Error
 	if err != nil {
-		return &models.ChatWithMessages{}, err
+		return &chatWMessages, err
 	}
 
-	err = s.db.Where("chatID = ?", chatWMessages.Chat.ID).
+	err = s.db.Where("chat_id = ?", chatID).Limit(int(limit)).
 		Order("created_at DESC").
 		Find(&chatWMessages.Messages).
 		Error
