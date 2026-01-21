@@ -1,12 +1,11 @@
 package main
 
 import (
+	"chat-api/internal/handlers"
+	"chat-api/internal/storage"
 	"database/sql"
 	"log"
 	"net/http"
-
-	"chat-api/internal/handlers"
-	"chat-api/internal/storage"
 
 	_ "github.com/lib/pq"
 	"github.com/pressly/goose"
