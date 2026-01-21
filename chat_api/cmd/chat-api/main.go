@@ -1,11 +1,12 @@
 package main
 
 import (
-	"chat-api/internal/handlers"
-	"chat-api/internal/storage"
 	"database/sql"
 	"log"
 	"net/http"
+
+	"chat-api/internal/handlers"
+	"chat-api/internal/storage"
 
 	_ "github.com/lib/pq"
 	"github.com/pressly/goose"
@@ -15,7 +16,7 @@ import (
 
 func main() {
 	// db
-	dsn := "host=localhost user=postgres password=postgres dbname=chatapidb port=5432 sslmode=disable"
+	dsn := "host=postgresql user=chat_api_user password=123 dbname=chat_api_db port=5432 sslmode=disable"
 	log.Println("Database opening")
 	psqlDB, err := sql.Open("postgres", dsn)
 	if err != nil {
@@ -24,7 +25,10 @@ func main() {
 	defer psqlDB.Close()
 
 	log.Println("Start migrating database")
-	goose.Up(psqlDB, "./migrations")
+	err = goose.Up(psqlDB, "./migrations")
+	if err != nil {
+		log.Fatal("Failed to migrate database:", err)
+	}
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {

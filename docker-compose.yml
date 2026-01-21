@@ -1,0 +1,43 @@
+services:
+  backend:
+    ports:
+      - "8080:8080"
+    build: .
+    environment:
+        DB_HOST: postgresql
+        DB_PORT: 5432
+        DB_USER: chat_api_user
+        DB_PASSWORD: 123
+        DB_NAME: chat_api_db
+        DB_SSL_MODE: disable
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/ || exit 1"]
+      start_period: 10s
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    depends_on:
+      postgresql:
+        condition: service_healthy
+
+  postgresql:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: chat_api_user
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: chat_api_db
+    # ports:
+    #   - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chat_api_user"]
+      start_period: 10s
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  postgres_data:
