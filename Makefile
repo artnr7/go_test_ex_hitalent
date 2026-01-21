@@ -9,4 +9,7 @@ run:
 stop:
 	docker compose down
 
+test:
+	cd chat_api && go test ./internal/handlers
+
 
